@@ -1,0 +1,97 @@
+SQL> 
+SQL> ----
+SQL> create or replace package final as
+  2  ----
+  3  
+  4  procedure validateSnum(
+  5  	     p_snum students.snum%type,
+  6  	     v_err_message OUT varchar2);
+  7  
+  8  procedure validateCallnum(
+  9  	     p_callnum schclasses.callnum%type,
+ 10  	     v_err_message OUT varchar2);
+ 11  
+ 12  procedure repeatEnrollment(
+ 13  	     p_callnum enrollments.callnum%type,
+ 14  	     p_snum students.snum%type,
+ 15  	     v_err_message OUT varchar2);
+ 16  
+ 17  end final;
+ 18  /
+
+Warning: Package created with compilation errors.
+
+SQL> 
+SQL> ------
+SQL> create or replace package body final as
+  2  ------
+  3  
+  4  procedure validateSnum(
+  5  	     p_snum students.snum%type,
+  6  	     v_err_message OUT varchar2) as
+  7  	     v_count number;
+  8  begin
+  9  	     select count(snum) into v_count
+ 10  	     from students
+ 11  	     where snum=p_snum;
+ 12  
+ 13  	     if v_count=0 then
+ 14  		     v_err_message := 'Error, Student number' ||p_snum ||' is invalid';
+ 15  	     end if;
+ 16  	     commit;
+ 17  	     end;
+ 18  
+ 19  
+ 20  procedure validateCallnum(
+ 21  	     p_callnum schclasses.callnum%type,
+ 22  	     v_err_message OUT varchar2) as
+ 23  	     v_count number;
+ 24  begin
+ 25  	     select count(callnum) into v_count
+ 26  	     from schclasses
+ 27  	     where callnum=p_callnum;
+ 28  
+ 29  	     if v_count=0 then
+ 30  		     v_err_message:='Error, class number '||p_callnum ||' is invalid. ';
+ 31  	     end if;
+ 32  	     commit;
+ 33  	     end;
+ 34  
+ 35  procedure repeatEnrollment(
+ 36  	     p_callnum schclasses.callnum%type,
+ 37  	     p_snum enrollments.snum%type,
+ 38  	     v_err_message OUT varchar2) as
+ 39  	     v_count number;
+ 40  begin
+ 41  	     select count(*) into v_count
+ 42  	     from enrollments
+ 43  	     where snum=p_snum
+ 44  	     and callnum=p_callnum;
+ 45  
+ 46  	     if v_count>0 then
+ 47  		     v_err_message:='Error, Repeat enrollment '.
+ 48  	     end if;
+ 49  
+ 50  
+ 51  end final;
+ 52  /
+
+Warning: Package Body created with compilation errors.
+
+SQL> show err
+Errors for PACKAGE BODY FINAL:
+
+LINE/COL ERROR                                                                  
+-------- -----------------------------------------------------------------      
+47/45    PLS-00103: Encountered the symbol "." when expecting one of the        
+         following:                                                             
+         * & = - + ; < / > at in is mod remainder not rem                       
+         <an exponent (**)> <> or != or ~= >= <= <> and or like like2           
+         like4 likec between || multiset member submultiset                     
+         The symbol "; was inserted before "." to continue.                     
+                                                                                
+51/10    PLS-00103: Encountered the symbol "end-of-file" when expecting         
+         one of the following:                                                  
+         begin end function pragma procedure                                    
+                                                                                
+SQL> spool off
